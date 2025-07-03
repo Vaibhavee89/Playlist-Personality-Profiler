@@ -5,8 +5,31 @@ import PersonalityChart from '../components/PersonalityChart';
 import MoodAnalysis from '../components/MoodAnalysis';
 import AudioFeatures from '../components/AudioFeatures';
 
+type PersonalityData = {
+  openness: number;
+  conscientiousness: number;
+  extraversion: number;
+  agreeableness: number;
+  neuroticism: number;
+};
+
+type MoodData = {
+  valence: number;
+  energy: number;
+  danceability: number;
+  acousticness: number;
+  instrumentalness: number;
+  liveness: number;
+  speechiness: number;
+};
+
+type AnalysisData = {
+  personality: PersonalityData;
+  mood: MoodData;
+};
+
 const Analysis = () => {
-  const [analysisData, setAnalysisData] = useState(null);
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Mock personality data
@@ -100,7 +123,7 @@ const Analysis = () => {
               <Brain className="h-6 w-6 mr-2 text-personality-openness" />
               Big Five Personality Traits
             </h2>
-            <PersonalityChart data={analysisData.personality} />
+            {analysisData && <PersonalityChart data={analysisData.personality} />}
           </motion.div>
 
           <motion.div
@@ -113,7 +136,7 @@ const Analysis = () => {
               <Heart className="h-6 w-6 mr-2 text-pink-400" />
               Mood & Audio Features
             </h2>
-            <AudioFeatures data={analysisData.mood} />
+            {analysisData && <AudioFeatures data={analysisData.mood} />}
           </motion.div>
         </div>
 
@@ -154,7 +177,7 @@ const Analysis = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <MoodAnalysis data={analysisData.mood} />
+          {analysisData && <MoodAnalysis data={analysisData.mood} />}
         </motion.div>
       </div>
     </div>
