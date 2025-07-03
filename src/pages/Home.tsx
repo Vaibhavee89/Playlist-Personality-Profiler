@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Music, Sparkles, Brain, Heart, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
 
 const Home = () => {
-  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
   const [isConnecting, setIsConnecting] = useState(false);
 
   const handleSpotifyLogin = async () => {
+    if (isAuthenticated) {
+      return;
+    }
+    
     setIsConnecting(true);
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      login();
+    } catch (error) {
+      console.error('Login failed:', error);
       setIsConnecting(false);
-      navigate('/dashboard');
-    }, 2000);
+    }
   };
 
   const features = [
@@ -74,25 +79,40 @@ const Home = () => {
           </p>
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleSpotifyLogin}
-          disabled={isConnecting}
-          className="btn-primary text-lg px-8 py-4 mb-12 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isConnecting ? (
-            <div className="flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              <span>Connecting...</span>
+        {!isAuthenticated && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSpotifyLogin}
+            disabled={isConnecting}
+            className="btn-primary text-lg px-8 py-4 mb-12 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isConnecting ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                <span>Connecting...</span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Music className="h-5 w-5" />
+                <span>Connect with Spotify</span>
+              </div>
+            )}
+          </motion.button>
+        )}
+
+        {isAuthenticated && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12"
+          >
+            <div className="bg-spotify-green/20 border border-spotify-green/30 rounded-lg p-4 mb-6">
+              <p className="text-white font-medium">✅ Connected to Spotify!</p>
+              <p className="text-white/70 text-sm">You can now explore your musical personality</p>
             </div>
-          ) : (
-            <div className="flex items-center space-x-2">
-              <Music className="h-5 w-5" />
-              <span>Connect with Spotify</span>
-            </div>
-          )}
-        </motion.button>
+          </motion.div>
+        )}
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
