@@ -1,12 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Sparkles, Calendar, Heart, Brain } from 'lucide-react';
 import JournalPrompt from '../components/JournalPrompt';
 
+const MyComponent = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>(
+  (props, ref) => (
+    <div ref={ref} {...props}>
+      {props.children}
+    </div>
+  )
+);
+
+interface Prompt {
+  id: number;
+  title: string;
+  category: string;
+  prompt: string;
+  icon: React.ComponentType<any>;
+  color: string;
+  date: string;
+}
+
 const Journal = () => {
-  const [prompts, setPrompts] = useState([]);
+  const [prompts, setPrompts] = useState<Prompt[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPrompt, setSelectedPrompt] = useState(null);
+  const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null);
 
   // Mock journal prompts based on musical analysis
   const mockPrompts = [
@@ -53,7 +71,7 @@ const Journal = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          style={{ marginBottom: '2rem' }}
         >
           <h1 className="text-4xl font-bold text-white mb-2 flex items-center">
             <BookOpen className="h-8 w-8 mr-3 text-spotify-green" />
@@ -87,17 +105,18 @@ const Journal = () => {
         )}
 
         {/* Generate New Prompt Button */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 text-center"
-        >
-          <button className="btn-primary">
-            <Sparkles className="h-5 w-5 mr-2" />
-            Generate New Prompt
-          </button>
-        </motion.div>
+        <div className="mt-8 text-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <button className="btn-primary">
+              <Sparkles className="h-5 w-5 mr-2" />
+              Generate New Prompt
+            </button>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
